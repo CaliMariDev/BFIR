@@ -9,7 +9,7 @@ Firstly, put this in the html header with the BFIR.js file in your project:
 ```html
 <script src="BFIR.js"></script>
 ```
-Now you just put a script body in the element. You can either compile it to raw brainfuck or execute the brainfuck as an unoptimized js function.
+Now you just put a script element in the body. You can either compile it to raw brainfuck or execute the brainfuck as an unoptimized js function.
 ```javascript
 //Get Raw Compiled Code
 var bf = compileBFIR("# Code Here");
