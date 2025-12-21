@@ -1,21 +1,19 @@
 # BFIR (Brainfuck Intermediate Representation)
-BFIR is a web based transpiler that is similar to an ASM and designed to be used for creating Brainfuck Applications easier.
+BFIR is a web based transpiler that is similar to an ASM and designed to be used for easily designing Brainfuck Applications.
 
-### why did i do this?
-- i like brainfuck
-- for fun
-- why not?
+## How To Use?
+Every line is a new command. Spaces seperate each operation, to write spaces within strings you use _, to use _ normally you should write \ before it, and \\ if you want to write \ without effecting anything.
 
-Its really simple to write in. Every line is a new action. Spaces seperate each operation, to write spaces within strings though you use _, to use _ normally you should write \ before it, and \\\\ if you want to put a single \ without effecting anything.
-Most things take from the program stack so you can push references and values for certain functions.
-
-### Base operations
+The programming language uses a stack to pass arguments into most API functions. The base operations or keywords are as follows:
+### Base Operations
+- \# [Comment]
 - inline [brainfuck code]
-- exec [function]
+- exec [API function]
 - malloc [name] (size: default 1)
 - push# [number]
 - push$ [string]
 - pushRef [variable name] (index)
+- sliceRef [slice start] [slice end]
 - CLEAR
 - move [variable a] [index] [variable b] [index]
 - moveAdd \<same as move>
@@ -26,5 +24,18 @@ Most things take from the program stack so you can push references and values fo
 - inc [variable name] (index)
 - dec [variable name] (index)
 - while [variable name] (index)
-- next [variable name] (index)
 - repeat [variable name] (index)
+- next [variable name] (index)
+
+Here is a list of API functions included when compiling BFIR. This includes the arguments taken from the stack after the name in order from First to Last.
+### API Functions
+- clone [reference a] [reference b]
+- sendRaw [string]
+- sendRef [reference]
+- read [reference]
+- setString [reference] [string]
+- addString [reference] [string]
+- subString [reference] [string]
+- setNum [reference] [number]
+- addNum [reference] [number]
+- subNum [reference] [number]
