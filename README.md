@@ -16,7 +16,7 @@ var bf = compileBFIR("# Code Here");
 
 //Unoptimized Js Function
 var fn = execBFIR("# Code Here",(text,num)=>{
-  //Output Function (Inputs text and number version of cell byte)
+  //Output Function (Takes text and number version of cell byte)
 });
 
 //The string is taken as input, split from start to end whenever "," is used
