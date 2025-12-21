@@ -1,6 +1,13 @@
+//BFIRlib version 1.2.0
 const BFIRlib = new (class {
     constructor(){
         this.bld = "";
+    }
+
+    wrapNum(x){
+        x = Math.floor(x ?? 0);
+        if(x < 0){ return this.wrapNum(x + 256); }
+        return x & 0xff;
     }
 
     ref(name,pos,size){
@@ -18,10 +25,30 @@ const BFIRlib = new (class {
         return this.ref(`${ref.name}[${off}]`,ref.pos+Number(off),1);
     }
 
+    sliceRef(ref,st,en){
+        st = st??0;
+        en = en??ref.size;
+        if(st+en > ref.size){ throw `Out Of Bounds Slice on Variable '${ref.name}'`; }
+        nref = this.ref("",ref.pos+st,en);
+        nref.name = `${ref.name}(${st}-${en})`;
+        return nref;
+    }
+
     done(){
         let c = this.bld;
         this.bld = "";
         return c;
+    }
+
+    clone(acc,a,b){
+        let ret = [];
+        if(a.size != b.size){ throw "clone: incompatible ref size"; }
+        for(let j = 0; j < a.size; j++){
+            ret.push(this.copy(acc,a,b));
+            a.pos++;
+            b.pos++;
+        }
+        return ret.join("");
     }
 
     copy(acc,a,b,type){
@@ -72,12 +99,56 @@ const BFIRlib = new (class {
     }
 })();
 
+function execBFIR(code,fn){
+    let cd = compileBFIR(code);
+    let ret = [];
+
+    for(let i = 0; i < cd.length; i++){
+        switch(cd[i]){
+            case("+"):
+                ret.push("tape[ptr] = lib.wrapNum((tape[ptr]??0) + 1);");
+                break;
+            case("-"):
+                ret.push("tape[ptr] = lib.wrapNum((tape[ptr]??0) - 1);");
+                break;
+            case(">"):
+                ret.push("ptr++;");
+                break;
+            case("<"):
+                ret.push("ptr--;");
+                break;
+            case("["):
+                ret.push("while(lib.wrapNum(tape[ptr]) !== 0){");
+                break;
+            case("]"):
+                ret.push("}");
+                break;
+            case("."):
+                ret.push("ret(String.fromCharCode(lib.wrapNum(tape[ptr])),lib.wrapNum(tape[ptr]));");
+                break;
+            case(","):
+                ret.push("tape[ptr] = lib.wrapNum(inp.splice(0,1));");
+                break;
+            default:
+                break;
+        }
+    }
+    ret = eval(`(lib,ret,inp)=>{inp = [...String(inp??"")].map(x=>x.charCodeAt(0)); let ptr = 0; let tape = []; ${ret.join("\n")}}`).bind(BFIRlib,BFIRlib,fn);
+    return ret;
+}
+
 function compileBFIR(code){
     let tks = String(code).replaceAll("\t"," ").split("\n").map((rw)=>{
         return rw.trim().replaceAll("\\\\","\n").replaceAll("\\_","\t").replaceAll("\n","\\").split(" ").map(x=>x.replaceAll("_"," ")).map(x=>x.replaceAll("\t","_")).filter((a)=>{return a.length!=0;});
     }).filter((a)=>{return a.length!=0;});
     let ret = [];
     let data = {funcs:{},memptr:1,memPos:{acc:0},memSize:{acc:1}};
+    data.funcs.clone = ((args,lib,funclib)=>{
+        let acc = lib.buildRef("acc",data);
+        let b = args.pop();
+        let a = args.pop();
+        return lib.clone(acc,a,b);
+    });
     data.funcs.sendRaw = ((args,lib,funclib)=>{
         return String(args.pop()).split("").map(x=>`${"+".repeat(x.charCodeAt(0))}.[-]`).join("");
     });
@@ -134,6 +205,8 @@ function compileBFIR(code){
         let accRef = BFIRlib.buildRef("acc",data);
         for(let ln of tks){
             switch(ln[0]){
+                case("#"):
+                    break;
                 case("inline"):
                     ret.push(ln[1]);
                     break;
@@ -144,6 +217,10 @@ function compileBFIR(code){
                     break;
                 case("pushRef"):
                     prstack.push(BFIRlib.buildRef(ln[1],data,ln[2]));
+                    break;
+                case("sliceRef"):
+                    aref = prstack.pop();
+                    prstack.push(BFIRlib.sliceRef(aref,ln[1],ln[2]));
                     break;
                 case("push$"):
                     prstack.push(String(ln[1]));
@@ -191,6 +268,10 @@ function compileBFIR(code){
                     aref = BFIRlib.buildRef(ln[1],data,ln[2]);
                     bref = BFIRlib.buildRef(ln[3],data,ln[4]);
                     ret.push(BFIRlib.copy(accRef,aref,bref,"sub"));
+                    break;
+                case("clearRef"):
+                    aref = BFIRlib.buildRef(ln[1],data,ln[2]);
+                    ret.push(BFIRlib.fromTo(accRef,aref).doAllRef(aref,"[-]").fromTo(aref,accRef).done());
                     break;
                 case("inc"):
                     aref = BFIRlib.buildRef(ln[1],data,ln[2]);
