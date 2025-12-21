@@ -47,7 +47,7 @@ The programming language uses a stack to pass arguments into most API functions.
 - repeat [variable name] (index)
 - next [variable name] (index)
 
-Here is a list of API functions included when compiling BFIR. This includes the arguments taken from the stack after the name in order from First to Last.
+Here is a list of API functions included when compiling BFIR. This includes, after the function name, the arguments taken from the stack in order from First to Last.
 ### API Functions
 - clone [reference a] [reference b]
 - sendRaw [string]
