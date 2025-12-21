@@ -15,6 +15,7 @@ The programming language uses a stack to pass arguments into most API functions.
 - pushRef [variable name] (index)
 - sliceRef [slice start] [slice end]
 - CLEAR
+- clearRef [variable] [index]
 - move [variable a] [index] [variable b] [index]
 - moveAdd \<same as move>
 - moveSub \<same as move>
