@@ -15,10 +15,11 @@ Now you just put a script body in the element. You can either compile it to raw 
 var bf = compileBFIR("# Code Here");
 
 //Unoptimized Js Function
-var fn = ("# Code Here",(text,num)=>{
-  //Output Function (Inputs Text and Number version of Cell Byte)
+var fn = execBFIR("# Code Here",(text,num)=>{
+  //Output Function (Inputs text and number version of cell byte)
 });
-//The String Is Taken As Input, Split From Start To End Whenever "," Is Used
+
+//The string is taken as input, split from start to end whenever "," is used
 fn("Input String");
 ```
 
