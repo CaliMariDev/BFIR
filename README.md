@@ -2,7 +2,25 @@
 BFIR is a web based transpiler that is similar to an ASM and designed to be used for easily designing Brainfuck Applications.
 
 ## How To Use?
-Every line is a new command. Spaces seperate each operation, to write spaces within strings you use _, to use _ normally you should write \ before it, and \\ if you want to write \ without effecting anything.
+Every line is a new command. Spaces seperate each operation, to write spaces within strings you use "_", to use "_" normally you should write "\" before it, and "\\" if you want to write "\" without effecting anything.
+
+How do you execute BFIR?
+Firstly, put this in the html header with the BFIR.js file in your project:
+```html
+<script src="BFIR.js"></script>
+```
+Now you just put a script body in the element. You can either compile it to raw brainfuck or execute the brainfuck as an unoptimized js function.
+```javascript
+//Get Raw Compiled Code
+var bf = compileBFIR("# Code Here");
+
+//Unoptimized Js Function
+var fn = ("# Code Here",(text,num)=>{
+  //Output Function (Inputs Text and Number version of Cell Byte)
+});
+//The String Is Taken As Input, Split From Start To End Whenever "," Is Used
+fn("Input String");
+```
 
 The programming language uses a stack to pass arguments into most API functions. The base operations or keywords are as follows:
 ### Base Operations
