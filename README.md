@@ -2,7 +2,7 @@
 BFIR is a web based transpiler that is similar to an ASM and designed to be used for easily designing Brainfuck Applications.
 
 ## How To Use?
-Every line is a new command. Spaces seperate each operation, to write spaces within strings you use "_", to use "_" normally you should write "\" before it, and "\\" if you want to write "\" without effecting anything.
+Every line is a new command. Spaces seperate each operation, to write spaces within strings you use "\_", to use "\_" normally you should write "\\" before it, and "\\\\" if you want to write "\\" without effecting anything.
 
 How do you execute BFIR?
 Firstly, put this in the html header with the BFIR.js file in your project:
