@@ -1,0 +1,151 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>BFlow</title>
+    <script src="BFIR.js"></script>
+    <style>
+        html, body {
+            margin: 0px;
+            padding: 0px;
+            background-color: #000;
+            color: #ffffff;
+            font-size: 2.5vh;
+            font-family: "main", Verdana, Geneva, Tahoma, sans-serif;
+        }
+
+        @font-face {
+            font-family: "main";
+            src: url(MartianMono-VariableFont_wdth\,wght.ttf);
+        }
+
+        p {
+            margin: 0px;
+            padding: 0px;
+        }
+
+        h1 {
+            margin: 0.5rem;
+        }
+
+        section.content {
+            border-radius: 0.25rem;
+            margin: 0.25rem;
+            padding: 0.25rem;
+        }
+
+        textarea {
+            flex-basis: 45%;
+            border-radius: 0.25rem;
+            padding: 0.25rem;
+            resize: none;
+            height: 20rem;
+            font-size: inherit;
+            font-family: inherit;
+            border: none;
+            background-color: #223;
+            color: #ffffff;
+        }
+
+        textarea#code {
+            text-wrap: nowrap;
+        }
+
+        button {
+            --bkg: #55a;
+            border: none;
+            border-radius: 0.25rem;
+            background-color: var(--bkg);
+            color: #ffffff;
+            font-size: inherit;
+            font-family: inherit;
+            padding: 0.5rem;
+            flex-basis: 15%;
+            margin: 0.15rem;
+        }
+
+        button:hover {
+            background-color: #556;
+        }
+
+        textarea:read-only {
+            color: #aaaacc;
+        }
+
+        div.flexbox, div.btnbox {
+            padding: 0.25rem;
+            display: flex;
+            justify-content: space-around;
+        }
+
+        div.btnbox {
+            justify-content: left;
+        }
+    </style>
+</head>
+<body>
+    <section class="content">
+        <h1>BFIR Editor</h1>
+        <div class="flexbox">
+<textarea id="code" spellcheck="false"># Truth Machine Program
+malloc a 1
+malloc rep 1
+
+pushRef a
+exec read
+pushRef a
+exec sendRef
+
+pushRef a
+push$ 0
+exec subString
+# Only Repeats 255 Times So Not To Crash
+while a
+ pushRef rep
+ push# 255
+ exec setNum
+ clearRef a
+repeat a
+
+while rep
+ push$ 1
+ exec sendRaw
+next rep
+</textarea>
+<textarea readonly id="output" spellcheck="false"><output goes here></textarea>
+        </div>
+        <p>compilation options:</p>
+        <div class="btnbox">
+            <button onclick="comp('run');">Exec</button>
+            <button onclick="comp('runinp');">Exec $Input</button>
+            <button onclick="comp('bfir');">BFIR >> BF</button>
+        </div>
+        <script>
+            function comp(opt){
+                let inp = document.getElementById("code");
+                let out = document.getElementById("output");
+                out.value = "Compiling...";
+                try {
+                    if(opt == "bfir"){
+                        out.value = compileBFIR(inp.value);
+                    }else if(opt == "run"){
+                        out.value = "> _\n";
+                        execBFIR(inp.value,(x)=>{
+                            document.getElementById("output").value += x;
+                        })("");
+                    }else if(opt == "runinp"){
+                        let dat = prompt("Code Input:");
+                        out.value = `> ${dat}\n`;
+                        execBFIR(inp.value,(x)=>{
+                            document.getElementById("output").value += x;
+                        })(dat);
+                    }
+                }catch(err){
+                    out.value = err;
+                }
+            }
+        </script>
+    </section>
+</body>
+</html>
